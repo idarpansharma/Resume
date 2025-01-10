@@ -1,47 +1,47 @@
-					// \U0001f609\U0001f609\U0001f609\U0001f609Please upvote if it helps \U0001f609\U0001f609\U0001f609\U0001f609
 class Solution {
 public:
     string simplifyPath(string path) {
-        
-        stack<string> st;
-        string res;
-        
-        for(int i = 0;  i<path.size(); ++i)
-        {
-            if(path[i] == '/')    
+        int n = path.size(), i = 0;
+        stack<string> s;
+
+        // Traverse the input path
+        while (i < n) {
+           
+            // Handle '.' (current directory)
+            if (path[i] == '.' && (path[i + 1] == '/' || i + 1 == n)) {
+                i++;
                 continue;
-            string temp;
-			// iterate till we doesn't traverse the whole string and doesn't encounter the last /
-            while(i < path.size() && path[i] != '/')
-            {
-				// add path to temp string
-                temp += path[i];
-                ++i;
             }
-            if(temp == ".")
+
+            // Handle '..' (parent directory)
+            if (path[i] == '.' && path[i + 1] == '.' && (path[i + 2] == '/' || i + 2 == n)) {
+                if (!s.empty()) s.pop(); 
+                i += 2;
                 continue;
-			// pop the top element from stack if exists
-            else if(temp == "..")
-            {
-                if(!st.empty())
-                    st.pop();
             }
-            else
-			// push the directory file name to stack
-                st.push(temp);
+
+            // Skip redundant slashes
+            if (path[i] == '/') {
+                i++;
+                continue;
+            }
+
+            // Collect valid directory names
+            string st = "";
+            while (i < n && path[i] != '/') {
+                st += path[i++];
+            }
+            s.push(st);  // Add directory to the stack
         }
-        
-		// adding all the stack elements to res
-        while(!st.empty())
-        {
-            res = "/" + st.top() + res;
-            st.pop();
+
+       
+        string ans = "";
+        while (!s.empty()) {
+            ans = "/" + s.top() + ans;
+            s.pop();
         }
+
         
-		// if no directory or file is present
-        if(res.size() == 0)
-            return "/";
-        
-        return res;
+        return ans == "" ? "/" : ans;
     }
 };
